@@ -11,6 +11,7 @@ let spawnTimer;
 let isShaking = false;
 let shakeStartTime = 0;
 const shakeDuration = 500;
+let gameOver = false; // Nowa zmienna kontrolująca stan gry
 
 const assets = {
     banana: new Image(),
@@ -39,7 +40,7 @@ const drawScreen = () => {
     ctx.fillStyle = "white";
     ctx.font = "30px Arial";
     ctx.textAlign = "right";
-    ctx.fillText(`Kliknięcia: ${clickCount}`, canvas.width - 20, 40);
+    ctx.fillText(`Clicks: ${clickCount}`, canvas.width - 20, 40);
 
     // Rysowanie serduszek (życia)
     for (let i = 0; i < lives; i++) {
@@ -94,9 +95,39 @@ const spawnMonkey = () => {
     monkeys.push({ x, y });
 };
 
+// Funkcja rysująca ekran końca gry
+const drawGameOver = () => {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "white";
+    ctx.font = "50px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("The banana was eaten!", canvas.width / 2, canvas.height / 2 - 50);
+
+    ctx.font = "30px Arial";
+    ctx.fillText(`Your score: ${clickCount} clicks`, canvas.width / 2, canvas.height / 2);
+
+    ctx.fillText("Click to restart", canvas.width / 2, canvas.height / 2 + 50);
+};
+
+// Restart gry
+const resetGame = () => {
+    clickCount = 0;
+    lives = 3;
+    monkeys = [];
+    spawnInterval = 2000;
+    gameOver = false; // Ustawienie zmiennej gameOver na false, bo gra się restartuje
+    bananaPosition.x = bananaPosition.startX;
+    bananaPosition.y = bananaPosition.startY;
+    updateSpawnInterval();
+    gameLoop();
+};
+
 // Aktualizacja gry
 const updateGame = () => {
     if (lives <= 0) {
+        gameOver = true; // Ustawienie zmiennej gameOver na true, bo gra się skończyła
         drawGameOver();
         return;
     }
@@ -132,11 +163,13 @@ canvas.addEventListener("click", (event) => {
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
 
-    if (lives <= 0) {
+    // Jeśli gra się skończyła, restartuj grę po kliknięciu
+    if (gameOver) {
         resetGame();
         return;
     }
 
+    // Sprawdzenie kliknięcia na banana
     if (x >= bananaPosition.x && x <= bananaPosition.x + 100 && y >= bananaPosition.y && y <= bananaPosition.y + 100) {
         clickCount++;
         isShaking = true;
@@ -148,6 +181,7 @@ canvas.addEventListener("click", (event) => {
         }
     }
 
+    // Sprawdzenie kliknięcia na małpki
     monkeys.forEach((monk, index) => {
         if (x >= monk.x && x <= monk.x + 50 && y >= monk.y && y <= monk.y + 50) {
             monkeys.splice(index, 1);
@@ -155,35 +189,10 @@ canvas.addEventListener("click", (event) => {
     });
 });
 
-// Ekran końca gry
-const drawGameOver = () => {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = "white";
-    ctx.font = "50px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText("Koniec gry", canvas.width / 2, canvas.height / 2);
-    ctx.font = "30px Arial";
-    ctx.fillText("Kliknij, aby zagrać ponownie", canvas.width / 2, canvas.height / 2 + 50);
-};
-
-// Restart gry
-const resetGame = () => {
-    clickCount = 0;
-    lives = 3;
-    monkeys = [];
-    spawnInterval = 2000;
-    bananaPosition.x = bananaPosition.startX;
-    bananaPosition.y = bananaPosition.startY;
-    updateSpawnInterval();
-    gameLoop();
-};
-
 // Główna pętla gry
 const gameLoop = () => {
     updateGame();
-    if (lives > 0) {
+    if (!gameOver) { // Gra będzie kontynuowana tylko jeśli nie jest zakończona
         requestAnimationFrame(gameLoop);
     }
 };
