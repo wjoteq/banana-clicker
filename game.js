@@ -21,8 +21,8 @@ const assets = {
 
 // Początkowa pozycja banana
 const bananaPosition = {
-    startX: (canvas.width / 2) - 50,
-    startY: (canvas.height / 2) - 50,
+    startX: (canvas.width / 2) - 100,
+    startY: (canvas.height / 2) - 100,
     x: (canvas.width / 2) - 50,
     y: (canvas.height / 2) - 50
 };
@@ -34,7 +34,7 @@ const drawScreen = () => {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Banan
-    ctx.drawImage(assets.banana, bananaPosition.x, bananaPosition.y, 100, 100);
+    ctx.drawImage(assets.banana, bananaPosition.x, bananaPosition.y, 200, 200);
 
     // Licznik kliknięć
     ctx.fillStyle = "white";
@@ -49,7 +49,7 @@ const drawScreen = () => {
 
     // Rysowanie małpek
     monkeys.forEach(monkey => {
-        ctx.drawImage(assets.monkey, monkey.x, monkey.y, 50, 50);
+        ctx.drawImage(assets.monkey, monkey.x, monkey.y, 100, 100);
     });
 };
 
