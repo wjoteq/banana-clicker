@@ -16,7 +16,8 @@ let gameOver = false; // Nowa zmienna kontrolująca stan gry
 const assets = {
     banana: new Image(),
     heart: new Image(),
-    monkey: new Image()
+    monkey: new Image(),
+    background: new Image()
 };
 
 // Początkowa pozycja banana
@@ -30,8 +31,7 @@ const bananaPosition = {
 // Funkcja rysująca ekran
 const drawScreen = () => {
     // Tło
-    ctx.fillStyle = "green";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(assets.background, 0, 0, canvas.width, canvas.height);
 
     // Banan
     ctx.drawImage(assets.banana, bananaPosition.x, bananaPosition.y, 200, 200);
@@ -202,11 +202,13 @@ const loadAssets = () => {
     assets.banana.src = 'banana.png';
     assets.heart.src = 'heart.png';
     assets.monkey.src = 'monkey.png';
+    assets.background.src = 'tlo.png'; // Załaduj obraz tła
 
     Promise.all([
         new Promise(resolve => assets.banana.onload = resolve),
         new Promise(resolve => assets.heart.onload = resolve),
-        new Promise(resolve => assets.monkey.onload = resolve)
+        new Promise(resolve => assets.monkey.onload = resolve),
+        new Promise(resolve => assets.background.onload = resolve)
     ]).then(() => {
         spawnTimer = setInterval(spawnMonkey, spawnInterval);
         gameLoop();
